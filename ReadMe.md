@@ -6,15 +6,9 @@ MAC版本请切换到MAC分支。
 
 <big>**你可以在这个仓库找到各个版本的汉化包：【 https://github.com/asxez/DockerDesktop-CN 】**</big>
 
-## 说明
-汉化过程仅需13s（20颗cpu核心）即可完成（具体耗时以运行结果为准）。
-
-运行以下代码即可查看核心数：
-```python
-import multiprocessing
-cpu_count = multiprocessing.cpu_count()
-print(cpu_count)
-```
+## 环境需求
+- python3.10+
+- nodejs
 
 ## 使用方法
 下载源码，管理员权限启动终端并进入到源码根目录，使用以下命令即可：
