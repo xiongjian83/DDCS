@@ -37,6 +37,8 @@ def run(root_path, config_path):
         replaced = fp.process_files(file_paths, search, replacement)
         if not replaced:
             log.warn(search)
+        else:
+            log.info(f"{search} -> {replacement}")
 
     DDProcessor(False)
 

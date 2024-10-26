@@ -4,6 +4,6 @@
 #
 # @Time    : 2024/8/10 上午11:24
 # @Author  : ASXE
-# @Email   : 2973918177@qq.com
-# @File    : __init__.py.py
-# @Software: PyCharm
+
+
+from . import log
