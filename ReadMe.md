@@ -10,12 +10,12 @@ MAC版本请切换到MAC分支。
 - python3.10+
 - nodejs
 
-**注意：如果出现如下报错则：**
+**注意：如果出现如下类似报错则：**
 ```text
 asar : 无法将“asar”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。
 ```
 ```bash
-npm install asar
+npm install -g asar
 ```
 
 ## 使用方法

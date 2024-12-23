@@ -74,7 +74,7 @@ class DDProcessor:
 
     @staticmethod
     def extract_asar():
-        os.system('npm install asar')
+        os.system('npm install -g asar')
         flag = os.system('asar extract app.asar app')
         if flag == 1:
             log.error('执行解包命令出错，即将退出')
