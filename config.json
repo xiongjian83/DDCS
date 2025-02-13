@@ -461,6 +461,18 @@
       "dest": "children:\"自动启动 SBOM 索引新构建或拉取的映像，并在检查映像时启动。\""
     },
     {
+      "src": "label:\"Enable Scout image analysis\"",
+      "dest": "label:\"启用 Scout 镜像分析\""
+    },
+    {
+      "src": "label:\"Enable background Scout SBOM indexing\"",
+      "dest": "label:\"启用后台 Scout SBOM 索引\""
+    },
+    {
+      "src": "children:\"Automatically start Scout SBOM indexing of newly built or pulled images, and when an image is inspected.\"",
+      "dest": "children:\"当新构建、拉取以及检查镜像时自动启动 Scout SBOM 索引。\""
+    },
+    {
       "src": "children:\"You are using the WSL 2 backend, so resource limits are managed by Windows.\"",
       "dest": "children:\"你正在使用 WSL 2 后端，因此资源限制由 Windows 管理。\""
     },
@@ -575,6 +587,10 @@
     {
       "src": "\"Enable Kubernetes\"",
       "dest": "\"启用 Kubernetes\""
+    },
+    {
+      "src": "children:\"Start a Kubernetes single or multi-node cluster when starting Docker Desktop.\"",
+      "dest": "children:\"启动 Docker Desktop 时启动 Kubernetes 单节点或多节点集群。\""
     },
     {
       "src": "label:\"Show system containers (advanced)\"",
@@ -1069,6 +1085,10 @@
       "dest": "title:`引擎磁盘占用。包含容器占用和其他间接占用。 磁盘 ${void 0===v?\"--.-- GB\":At(vt(v.availableBytes))} 可用。 共 ${void 0===v?\"--.-- GB\":At(vt(v.totalBytes))}`"
     },
     {
+      "src": "title:\"Engine disk utilization. This includes container data, images, builds, etc.\"",
+      "dest": "title:\"引擎磁盘占用。包含容器数据，镜像，构建等。\""
+    },
+    {
       "src": "children:[\"The Extensions Marketplace is managed by your organization. See\"",
       "dest": "children:[\"扩展市场由您的组织管理。请参见\""
     },
@@ -1087,6 +1107,10 @@
     {
       "src": "children:\"Host networking allows containers that are started with --net=host to use localhost to connect to TCP and UDP services on the host. It will automatically allow software on the host to use localhost to connect to TCP and UDP services in the container. Sign in required.\"",
       "dest": "children:\"主机网络允许以 --net=host 启动的容器使用 localhost 连接到主机上的 TCP 和 UDP 服务。它将自动允许主机上的软件使用 localhost 连接到容器中的 TCP 和 UDP 服务。需要登录。\""
+    },
+    {
+      "src": "children:\"Host networking allows containers that are started with --net=host to use localhost to connect to TCP and UDP services on the host. It will automatically allow software on the host to use localhost to connect to TCP and UDP services in the container.\"",
+      "dest": "children:\"主机网络允许以 --net=host 启动的容器使用 localhost 连接到主机上的 TCP 和 UDP 服务。它将自动允许主机上的软件使用 localhost 连接到容器中的 TCP 和 UDP 服务。\""
     },
     {
       "src": "children:\"Enable integration with additional distros:\"",
@@ -1367,6 +1391,70 @@
     {
       "src": "\"Advanced Information\"",
       "dest": "\"高级信息\""
+    },
+    {
+      "src": "\"Delete the following data set(s)\"",
+      "dest": "\"删除以下数据集\""
+    },
+    {
+      "src": "\"Reset Docker Desktop to factory defaults\"",
+      "dest": "\"将 Docker Desktop 重置为出厂默认设置\""
+    },
+    {
+      "src": "\"A factory reset destroys all Docker containers, images and volumes local to the machine, and restores the application to its original state, as when it was first installed.\"",
+      "dest": "\"恢复出厂设置会破坏机器本地的所有 Docker 容器、镜像和卷，并将应用程序恢复到最初安装时的原始状态。\""
+    },
+    {
+      "src": "children:\"Customize terminal appearance\"",
+      "dest": "children:\"自定义终端外观\""
+    },
+    {
+      "src": "children:\"You'll always receive notifications about zero-day vulnerabilities\"",
+      "dest": "children:\"您将始终收到有关零日漏洞的通知\""
+    },
+    {
+      "src": "children:\"Delivery preferences\"",
+      "dest": "children:\"通知设置\""
+    },
+    {
+      "src": "label:\"Notification pop-ups\"",
+      "dest": "label:\"应用内通知\""
+    },
+    {
+      "src": "children:\"This will send you notifications when you are in Docker Desktop.\"",
+      "dest": "children:\"向您发送应用中通知。\""
+    },
+    {
+      "src": "label:\"OS notifications\"",
+      "dest": "label:\"系统通知\""
+    },
+    {
+      "src": "children:\"This will send you OS notifications when Docker Desktop is running on your computer.\"",
+      "dest": "children:\"向您发送操作系统通知。（Docker Desktop 需要保持运行）\""
+    },
+    {
+      "src": "children:\"Other notification options\"",
+      "dest": "children:\"其他通知选项\""
+    },
+    {
+      "src": "content:\"Interact with your host machine and execute commands directly from Docker Desktop\"",
+      "dest": "content:\"从 Docker Desktop 中直接与主机交互并执行命令\""
+    },
+    {
+      "src": "description:\"View all your running containers and applications.\"",
+      "dest": "description:\"查看所有正在运行的容器和应用程序。\""
+    },
+    {
+      "src": "description:\"View and manage your local and Docker Hub images.\"",
+      "dest": "description:\"查看和管理本地和 Docker Hub 镜像。\""
+    },
+    {
+      "src": "label:\"Hub repositories\"",
+      "dest": "label:\"Hub 仓库\""
+    },
+    {
+      "src": "description:\"Manage your volumes, view usage, and inspect their contents.\"",
+      "dest": "description:\"管理卷柜，查看使用情况并检查其内容。\""
     }
   ]
 }
