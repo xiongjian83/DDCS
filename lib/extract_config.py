@@ -1468,7 +1468,7 @@ config = [
         "更改 Kubernetes 版本会重置您的集群。删除所有堆栈和资源。",
     ),
     ("Kubernetes version", "Kubernetes 版本"),
-    ("Node(s):", ""),
+    ("Node(s):", "节点:"),
     (
         "Changing the number of nodes resets the cluster. All stacks and resources are deleted.",
         "更改节点数将重置群集。删除所有堆栈和资源。",
