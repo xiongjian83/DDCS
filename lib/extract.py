@@ -281,6 +281,10 @@ def generate_config(path: Path, include_old: bool = True, output: str = "extract
                 buf.write(",\n")
     buf.write("]\n")
 
+    if not new_config:
+        log.warn(f"没有提取到任何内容, 请检查路径: {path}")
+        return
+
     fmt_content = black.format_str(buf.getvalue(), mode=black.Mode(line_length=120))
     with open(Path(__file__).parent / output, "w", encoding="utf-8") as writer:
         writer.write(fmt_content)

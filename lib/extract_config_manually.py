@@ -17,6 +17,7 @@ config_manually = [
     ('&&"Your legacy Docker Scout plan is no longer available. "', '&&"你之前的 Docker Scout 计划不再可用。"'),
     ("&&` - ${_.length} selected`", "&&` - ${_.length} 已选择`"),
     ('||"Loading..."', '||"加载中..."'),
+    ('||"Status unknown"', '||"状态未知"'),
     # ==============================#  三目运算符 #==============================#
     (
         'S.wslPreconditionMessage?`Use the WSL 2 based engine (${S.wslPreconditionMessage})`:"Use the WSL 2 based engine"',
@@ -62,6 +63,8 @@ config_manually = [
     ('?"Install anyway":"Install"', '?"始终安装":"安装"'),
     ('?"Version":"Latest version"', '?"版本":"最新版本"'),
     # ==============================# 变量中 #==============================#
+    ('c="Browse"', 'c="浏览"'),
+    ('u="Manage"', 'u="管理"'),
     ('{work:"Work",personal:"Personal"}', '{work:"商业",personal:"个人"}'),
     ('columnMenuLabel:"Menu"', 'columnMenuLabel:"菜单"'),
     ('columnMenuSortAsc:"Sort by ASC"', 'columnMenuSortAsc:"升序排列"'),
@@ -150,5 +153,16 @@ config_manually = [
         '''(e.payload.imageRef?`Image ${e.payload.imageRef}`:"Image")+" is in use. Delete the container that's using it and try again."''',
         '''(e.payload.imageRef?`镜像 ${e.payload.imageRef}`:"镜像")+" 正在使用中。删除正在使用它的容器，然后重试。"''',
     ),
+    ('name:"Resume"', 'name:"恢复"'),
+    ('name:"Pause"', 'name:"暂停"'),
+    ('name:"Restart"', 'name:"重启"'),
     ('''return"You're up to date"''', '''return"当前是最新版"'''),
+    ('return"Resource Saver mode"', 'return"资源节省模式"'),
+    ('return"Updating"', 'return"更新中"'),
+    (
+        'return`Engine ${e??"status unknown"}`',
+        'const s_cn={"starting":"启动中","running":"运行中","paused":"已暂停","stopping":"停止中","stopped":"已关闭"};return`引擎 ${s_cn[e]??e??"状态未知"}`',
+    ),
+    ('"Docker Desktop paused"', '"Docker Desktop 已暂停"'),
+    ('"Docker Desktop is running in Resource Saver mode"', '"Docker Desktop 资源节省模式运行中"'),
 ]
