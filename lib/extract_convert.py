@@ -2,6 +2,7 @@ import json
 import re
 from pathlib import Path
 
+from common import log
 from lib.extract_config import config
 from lib.extract_config_manually import config_manually
 
@@ -28,12 +29,17 @@ def convert_from_json():
     config_set = set(s.strip() for src, dst in config if dst != "" for s in _re_text_vars.split(src))
     config_set.update(s.strip() for src, _ in config_manually for s in extract_qstr(src))
 
+    used, total = 0, 0
     with open(_json_path, "r", encoding="utf-8") as reader:
         json_config = json.loads(reader.read())["all"]
     for v in json_config:
         for src, dst in zip(extract_qstr(v["src"]), extract_qstr(v["dest"])):
             if src != dst and src.strip() not in config_set:
                 print(src, dst)
+            else:
+                used += 1
+            total += 1
+    log.info(f"转换进度: {used * 100 / total:.2f} %")
 
 
 if __name__ == "__main__":
