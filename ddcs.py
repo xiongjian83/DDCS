@@ -4,10 +4,12 @@
 #
 # @Time    : 2024/8/9 下午4:17
 # @Author  : ASXE
-
+import argparse
 import time
+from pathlib import Path
 
 from common import log
+from lib.extract import replace
 from lib.processor import DDProcessor, FileProcessor
 
 
@@ -43,7 +45,25 @@ def run(root_path, config_path):
     DDProcessor(False)
 
 
+@cost_time
+def run_v2(root_path: str):
+    log.info("脚本已启动...")
+    time.sleep(1)
+
+    DDProcessor(True)
+    log.info("汉化开始")
+    replace(Path(root_path))
+    DDProcessor(False)
+
+
 if __name__ == "__main__":
-    root_path = './app/build/'
-    config_path = './config.json'
-    run(root_path, config_path)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--v2", action="store_true")
+    args = parser.parse_args()
+
+    root_path = "./app/build/"
+    config_path = "./config.json"
+    if args.v2:
+        run_v2(root_path)
+    else:
+        run(root_path, config_path)
