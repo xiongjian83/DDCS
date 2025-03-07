@@ -83,7 +83,7 @@ ddcs "DockerDesktop-${version}-Mac-apple.dmg"
 ddcs "DockerDesktop-${version}-Mac-intel.dmg"
 
 
-notes="ockerDesktop ${version} 版本安装程序及汉化包.
+notes="DockerDesktop ${version} 版本安装程序及汉化包.
 
 注意: v2beta 包含更多的翻译, 但可能无法正常工作"
 
