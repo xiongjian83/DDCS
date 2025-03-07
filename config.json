@@ -73,6 +73,10 @@
       "dest": "\"我的扩展\","
     },
     {
+      "src": "\"Manage Extensions\":\"Extensions Marketplace\"",
+      "dest": "\"管理扩展\":\"扩展市场\""
+    },
+    {
       "src": "title:\"Add Extensions\"",
       "dest": "title:\"添加扩展\""
     },
@@ -183,6 +187,10 @@
     {
       "src": "title:\"Images are used to run containers\",description:\"You can either build an image from a Dockerfile, or download an existing image to run\",buttonTitle:\"Search images to run\"",
       "dest": "title:\"镜像用于运行容器\",description:\"您可以从 Dockerfile 构建镜像，也可以下载现有镜像以运行\",buttonTitle:\"搜索要运行的镜像\""
+    },
+    {
+      "src": "label:b,value:\"local\"",
+      "dest": "label:\"本地\",value:\"local\""
     },
     {
       "src": "label:\"Hub\",value:\"hub\"",
@@ -865,12 +873,20 @@
       "dest": "Docker Desktop 已被阻"
     },
     {
+      "src": "Docker Desktop ${t}",
+      "dest": "Docker Desktop 运行中"
+    },
+    {
       "src": "\"Docker Desktop paused\"",
       "dest": "\"Docker Desktop 暂停中\""
     },
     {
       "src": "\"Docker Desktop is running in Resource Saver mode\"",
       "dest": "\"Docker Desktop 正在节能模式下运行\""
+    },
+    {
+      "src": "Kubernetes is running",
+      "dest": "Kubernetes 正在运行"
     },
     {
       "src": "label:\"Documentation\"",

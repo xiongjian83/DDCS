@@ -5,33 +5,24 @@
 # @Time    : 2024/8/9 下午4:17
 # @Author  : ASXE
 
-import ctypes
 import json
 import multiprocessing
 import os
+import platform
 import shutil
 import sys
-import winreg
 from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 
 from common import log
-
-
-def run_as_admin():
-    ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
-
-
-def is_admin():
-    try:
-        return ctypes.windll.shell32.IsUserAnAdmin()
-    except:
-        return False
 
 
 class DDProcessor:
     def __init__(self, get=True):
         self.get = get
-        self.docker_install_path = self.get_install_path() if self.get_install_path() is not None else sys.exit()
+        self.resource_path = self.get_resource_path()
+        if self.resource_path is None:
+            sys.exit()
         if self.get:
             log.info('正在备份文件...')
             self.cp_asar(self.get)
@@ -45,29 +36,45 @@ class DDProcessor:
             log.info('汉化完成')
 
     @staticmethod
-    def get_install_path(name='Docker Desktop'):
-        try:
-            reg_key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE,
-                                     rf"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{name}")
-            install_path, _ = winreg.QueryValueEx(reg_key, "InstallLocation") # 获取安装路径
-            winreg.CloseKey(reg_key)
-            return install_path
-        except FileNotFoundError:
+    def get_resource_path():
+        system = platform.system()
+        if system == "Windows":
+            import winreg
+
+            try:
+                reg_key = winreg.OpenKey(
+                    winreg.HKEY_LOCAL_MACHINE, rf"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Docker Desktop"
+                )
+                install_path, _ = winreg.QueryValueEx(reg_key, "InstallLocation")  # 获取安装路径
+                winreg.CloseKey(reg_key)
+
+                return Path(f"{install_path}/frontend/resources")
+            except FileNotFoundError:
+                return None
+        elif system == "Darwin":
+            potential_paths = [
+                Path("/Applications/Docker.app/Contents/MacOS/Docker Desktop.app/Contents/Resources"),
+                Path("~/Applications/Docker.app/Contents/MacOS/Docker Desktop.app/Contents/Resources").expanduser(),
+            ]
+            for path in potential_paths:
+                if path.exists():
+                    return path
+        else:
+            log.error(f"unsupported system: {system}")
             return None
 
     def cp_asar(self, get):
-        dest = os.path.join(os.getcwd(), 'app.asar.unpacked')
+        cwd = Path.cwd()
         try:
+            asar_unpacked = Path.cwd() / "app.asar.unpacked"
             if get:
-                if os.path.exists(dest):
-                    shutil.rmtree(dest)
-                shutil.copytree(f'{self.docker_install_path}/frontend/resources/app.asar.unpacked', dest)
-                shutil.copy(f'{self.docker_install_path}/frontend/resources/app.asar', os.getcwd())
-                shutil.copy(f'{self.docker_install_path}/frontend/resources/app.asar',
-                            os.path.join(os.getcwd(), 'app-backup.asar'))
+                if asar_unpacked.exists():
+                    shutil.rmtree(asar_unpacked)
+                shutil.copytree(self.resource_path / "app.asar.unpacked", asar_unpacked)
+                shutil.copy(self.resource_path / "app.asar", cwd)
+                shutil.copy(self.resource_path / "app.asar", cwd / "app-backup.asar")
             else:
-                os.remove(f'{self.docker_install_path}/frontend/resources/app.asar')
-                shutil.copy(f'{os.getcwd()}/app.asar', f'{self.docker_install_path}/frontend/resources')
+                shutil.copy(cwd / "app.asar", self.resource_path)
         except Exception as e:
             log.error(f"文件复制时出错: {str(e)}")
             sys.exit()
