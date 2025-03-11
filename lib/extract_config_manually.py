@@ -62,6 +62,8 @@ config_manually = [
     ('?"Save changes":""', '?"保存更改":""'),
     ('?"Install anyway":"Install"', '?"始终安装":"安装"'),
     ('?"Version":"Latest version"', '?"版本":"最新版本"'),
+    ('?"disconnect from":"remove"', '?"断开连接":"删除"'),
+    ('?"retagged":"untagged"', '?"重新标记":"取消标记"'),
     # ==============================# 变量中 #==============================#
     ('c="Browse"', 'c="浏览"'),
     ('u="Manage"', 'u="管理"'),
