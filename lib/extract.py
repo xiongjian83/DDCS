@@ -1,5 +1,4 @@
 import re
-from dataclasses import dataclass
 from io import StringIO
 from pathlib import Path
 from typing import List, Tuple, Generator, Union
@@ -56,7 +55,43 @@ head:{children:["title","base","link","style","meta","script","noscript","comman
 _re_children_all_lower_text = re.compile(r'children:\["[a-z]+"(?:,"[a-z]+")+]')
 
 
-@dataclass
+class Dst:
+    src: str  # without args
+    dst: str
+    args: List[str]
+
+    def __init__(self, src: str):
+        buf, group, arg_buf, args, dep = StringIO(), 0, StringIO(), [], 0
+        for i, c in enumerate(src):
+            if c == "$" and i < len(src) and src[i + 1] == "{":
+                arg_buf.write(c)
+                dep += 1
+            elif dep > 0 and c == "}":
+                arg_buf.write(c)
+                dep -= 1
+                if dep == 0:
+                    args.append(arg_buf.getvalue())
+                    arg_buf = StringIO()
+                    buf.write(f"{{{group}}}")
+                    group += 1
+            elif dep == 0:
+                buf.write(c)
+            else:
+                arg_buf.write(c)
+
+        self.src = buf.getvalue()
+        self.dst = config_dict.get(self.src, "")
+        self.args = args
+
+    def __bool__(self):
+        return bool(self.dst)
+
+    def format(self) -> str:
+        if self.args:
+            return self.dst.format(*self.args)
+        return self.dst
+
+
 class Text:
     """
     对于简单文本: fmt='label:"{}"', src='Close', dst='关闭', args=None.
@@ -67,20 +102,46 @@ class Text:
         raw='"The ",(0,y.jsx)("strong",{children:"volumes"}),' element...''
         args=['(0,y.jsx)("strong",{children:"volumes"})'],
         args_len=40,
+    对于 array:
+        fmt='buttons:["{}","{}"]',
+        src=["Switch", "Cancel"],
+        dst=["切换", "取消"],
+        args=None,
     """
 
     start: int
     fmt: str  # label:"{}"
-    src: Union[str, List[str]]  # Close
-    dst: Union[str, List[str]]  # 关闭
+    src: Union[str, List[str]]  # Close | ["Switch", "Cancel"]
+    dst: Union[Dst, List[Dst]]  # 关闭 | ["切换", "关闭"]
     """children"""
     raw: str = None
     args: List[str] = None
     args_len: int = 0
 
-    def _format_args(self, value: str) -> str:
+    def __init__(
+        self,
+        start: int,
+        fmt: str,
+        src: Union[str, List[str]],
+        raw: str = None,
+        args: List[str] = None,
+        args_len: int = 0,
+    ):
+        self.start = start
+        self.fmt = fmt
+        self.src = src
+        if isinstance(src, list):
+            self.dst = [Dst(v) for v in src]
+        else:
+            self.dst = Dst(src)
+        self.raw = raw
+        self.args = args
+        self.args_len = args_len
+
+    def _format_args(self) -> str:
+        dst = self.dst.format()
         rst, accessed = [], [False] * len(self.args)
-        for part in _re_text_vars.split(value):
+        for part in _re_text_vars.split(dst):
             if not part:
                 continue
             if _re_text_vars.match(part):
@@ -102,22 +163,29 @@ class Text:
         :return: (src, dst), src 是英文文本, dst 是中文文本, 其中 children src 已优化
         """
         if isinstance(self.src, list):
-            for src, dst in zip(self.src, self.dst):
-                yield src, dst
+            for dst in self.dst:
+                yield dst.src, dst.dst
         else:
-            yield self.src, self.dst
+            yield self.dst.src, self.dst.dst
+
+    def has_dst(self) -> bool:
+        if isinstance(self.src, list):
+            return self.dst and any(self.dst)
+        return bool(self.dst)
 
     def format(self) -> Tuple[str, str]:
         """
         获取格式化之后的字符串元组
         :return: (src, dst), src 是原始文件中的字符串, dst 是替换后的字符串
         """
+        # children
         if self.raw:
-            return self.fmt.format(self.raw), self.fmt.format(self._format_args(self.dst))
-        elif isinstance(self.src, list):
-            return self.fmt.format(*self.src), self.fmt.format(*self.dst)
-        else:
-            return self.fmt.format(self.src), self.fmt.format(self.dst)
+            return self.fmt.format(self.raw), self.fmt.format(self._format_args())
+        # array
+        if isinstance(self.src, list):
+            return self.fmt.format(*self.src), self.fmt.format(*[d.format() for d in self.dst])
+        # simple
+        return self.fmt.format(self.src), self.fmt.format(self.dst.format())
 
 
 def extract(code: str) -> Generator[Text, None, None]:
@@ -135,8 +203,20 @@ def extract(code: str) -> Generator[Text, None, None]:
         start = match.start()
         fmt, sep, src = match.groups()
         fmt += ":" + sep + "{}" + sep
-        dst = config_dict.get(src, "")
-        yield Text(start=start, fmt=fmt, src=src, dst=dst)
+        if sep == "`":
+            l, r = src.count("{"), src.count("}")
+            if r < l:
+                start, end = match.span(3)
+                while r < l:
+                    if code[end] == "{":
+                        l += 1
+                    elif code[end] == "}":
+                        r += 1
+                    end += 1
+                while code[end] != "`":
+                    end += 1
+                src = code[start:end]
+        yield Text(start=start, fmt=fmt, src=src)
 
 
 def extract_children(code: str, code_start: int = 0, nested: bool = False) -> Generator[Text, None, None]:
@@ -176,31 +256,26 @@ def _extract_children(children_code: str, children_start: int = 0) -> Generator[
     :param children_code: children 代码段, children:[...]
     :param children_start: 代码段起始位置
     """
-    src, group, args, args_len = [], 0, [], 0
+    buf, group, args, args_len = StringIO(), 0, [], 0
     for code, start, is_str in _split_array(children_code):
         if is_str:
-            src.append(code[1:-1])
+            buf.write(code[1:-1])
             continue
 
-        src.append(f"{{{group}}}")
+        buf.write(f"{{{group}}}")
         group += 1
 
         start += children_start
         yield from extract_children(code, start, True)
         # 文本
         for match in _re_nested_children_text.finditer(code):
-            text_fmt = 'children:"{}"'
-            text_src = match.groups()[0]
-            text_dst = config_dict.get(text_src, "")
-            yield Text(start=start, fmt=text_fmt, src=text_src, dst=text_dst)
+            yield Text(start=start, fmt='children:"{}"', src=match.groups()[0])
         args.append(code)
         args_len += len(code)
-    src = "".join(src)
     yield Text(
         start=children_start,
         fmt="children:{}",
-        src=src,
-        dst=config_dict.get(src, ""),
+        src=buf.getvalue(),
         raw=children_code,
         args=args,
         args_len=args_len,
@@ -215,7 +290,7 @@ def _extract_array(prefix: str, array_code: str, array_start: int = 0) -> Genera
         fmt += f"{code[0]}{{}}{code[0]},"
         src.append(code[1:-1])
     if src:
-        yield Text(start=array_start, fmt=fmt[:-1] + "]", src=src, dst=[config_dict.get(v, "") for v in src])
+        yield Text(start=array_start, fmt=fmt[:-1] + "]", src=src)
 
 
 def _split_array(array_code: str) -> Generator[Tuple[str, int, bool], None, None]:
@@ -301,7 +376,7 @@ def replace(path: Path):
             content = reader.read()
         # 优先替换 args_len 长的, 否则内部嵌套 children 被替换后, 外部 children 将无法替换
         for text in sorted(extract(content), key=lambda v: (-v.args_len, v.start)):
-            if text.dst is None or text.dst == "":
+            if not text.has_dst():
                 continue
             src, dst = text.format()
             new_content = content.replace(src, dst)
