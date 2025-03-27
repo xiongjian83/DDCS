@@ -44,11 +44,14 @@ fi
 if [ ! -e "dist/DockerDesktop-${version}-Mac-intel.dmg" ]; then
     wget -q -O "dist/DockerDesktop-${version}-Mac-intel.dmg" "https://desktop.docker.com/mac/main/amd64${build_path}Docker.dmg"
 fi
+if [ ! -e "dist/DockerDesktop-${version}-Debian-x86.deb" ]; then
+    wget -q -O "dist/DockerDesktop-${version}-Debian-x86.deb" "https://desktop.docker.com/linux/main/amd64${build_path}docker-desktop-amd64.deb"
+fi
 
 # unzip, extract, replace, pack
 function ddcs() {
     pkg_name=$1
-    # win-x86, win-arm, mac-apple, mac-intel
+    # Windows-x86, Windows-arm, Mac-apple, Mac-intel, Debian-x86
     arch=$(echo "$pkg_name" | sed -nr 's/DockerDesktop-.+-(.+-.+)\..+/\1/p')
 
     if [ -e "app-${arch}.asar" ]; then
@@ -60,6 +63,9 @@ function ddcs() {
         src="frontend/resources"
     elif [[ $arch == Mac* ]]; then
         src="Docker/Docker.app/Contents/MacOS/Docker Desktop.app/Contents/Resources"
+    elif [[ $arch == Debian* ]]; then
+        tar -zxf "tmp/${arch}/data.tar" -C "tmp/${arch}"
+        src="opt/docker-desktop/resources"
     else
        echo "unknown arch"
        exit 1
@@ -81,6 +87,7 @@ ddcs "DockerDesktop-${version}-Windows-x86.exe"
 ddcs "DockerDesktop-${version}-Windows-arm.exe"
 ddcs "DockerDesktop-${version}-Mac-apple.dmg"
 ddcs "DockerDesktop-${version}-Mac-intel.dmg"
+ddcs "DockerDesktop-${version}-Debian-x86.deb"
 
 
 notes="DockerDesktop ${version} 版本安装程序及汉化包.
