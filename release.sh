@@ -64,7 +64,7 @@ function ddcs() {
     elif [[ $arch == Mac* ]]; then
         src="Docker/Docker.app/Contents/MacOS/Docker Desktop.app/Contents/Resources"
     elif [[ $arch == Debian* ]]; then
-        tar -zxf "tmp/${arch}/data.tar" -C "tmp/${arch}"
+        tar -xf "tmp/${arch}/data.tar" -C "tmp/${arch}"
         src="opt/docker-desktop/resources"
     else
        echo "unknown arch"
